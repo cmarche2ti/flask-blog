@@ -1,0 +1,38 @@
+import os
+from flask import Flask
+from dotenv import load_dotenv, find_dotenv
+from flask_sqlalchemy import SQLAlchemy
+from flask_bcrypt import Bcrypt
+from flask_login import LoginManager
+from flask_mail import Mail
+from flaskblog.config import Config
+
+load_dotenv(find_dotenv())
+db = SQLAlchemy()
+bcrypt = Bcrypt()
+login_manager = LoginManager()
+login_manager.login_view = "users.login"
+login_manager.login_message_category = "info"
+
+mail = Mail()
+
+
+def create_app(config_class=Config):
+    app = Flask(__name__)
+    app.config.from_object(Config)
+
+    db.__init__(app)
+    bcrypt.__init__(app)
+    login_manager.__init__(app)
+    mail.__init__(app)
+
+    from flaskblog.users.routes import users
+    from flaskblog.posts.routes import posts
+    from flaskblog.main.routes import main
+    from flaskblog.errors.handlers import errors
+
+    app.register_blueprint(users)
+    app.register_blueprint(posts)
+    app.register_blueprint(main)
+    app.register_blueprint(errors)
+    return app
