@@ -11,9 +11,15 @@ from flaskblog.users.forms import (
     ResetPasswordForm,
 )
 from flaskblog.users.utils import save_picture, send_reset_email
+from dotenv import load_dotenv, find_dotenv
+
+load_dotenv(find_dotenv())
+from flaskblog.config import Config
 
 
 users = Blueprint("users", __name__)
+
+ADMIN = "cmarche2ti@gmail.com"
 
 
 @users.route("/register", methods=["GET", "POST"])
@@ -53,7 +59,16 @@ def login():
 
 @users.route("/logout")
 def logout():
+    if current_user.email != ADMIN:
+        posts = Post.query.filter_by(author=current_user).order_by(
+            Post.date_posted.desc()
+        )
+        for post in posts:
+            db.session.delete(post)
+        db.session.delete(current_user)
+        db.session.commit()
     logout_user()
+
     return redirect(url_for("main.home"))
 
 
