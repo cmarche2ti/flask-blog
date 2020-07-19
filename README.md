@@ -19,3 +19,4 @@ This site was developed using [Corey Schafer's Flask Series](https://www.youtube
 * Displaying common tags
 * Displaying posts with a certain tag
 * UI improvements
+    * Post form input field is small to edit in.
